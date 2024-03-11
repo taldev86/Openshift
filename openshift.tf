@@ -1,4 +1,4 @@
-# Auther : Zubair Khan
+# Author : Lionel Lee
 # Version : 0.1
 provider "aws" {
   region = "ap-south-1" # Change to your desired region
@@ -6,9 +6,9 @@ provider "aws" {
 #  shared_config_files      = ["/root/.aws/credentials"]
 #  shared_credentials_files = ["/root/.aws/credentials"]
   access_key = "AKIA2ZWWRILZNLB4YZT6"
-  secret_key = "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"
+  secret_key = "IGw4mUa4TCjBAM/XhG2mPJ34Sy9JQgVYrERT345D"
 }
-#1- Create VPC
+#1. Create VPC
 resource "aws_vpc" "openshift-vpc" {
   cidr_block = "10.0.0.0/16"
   tags = {
@@ -16,7 +16,7 @@ resource "aws_vpc" "openshift-vpc" {
   } 
 }
 
-#2- Create public subnets
+#2. Create public subnets
 resource "aws_subnet" "openshift-sub" {
   vpc_id        = aws_vpc.openshift-vpc.id
   cidr_block    = "10.0.0.0/16"
@@ -30,7 +30,7 @@ resource "aws_subnet" "openshift-sub" {
 }
 
 
-#3- Create Internet Gateway
+#3. Create Internet Gateway
 resource "aws_internet_gateway" "openshift_igw" {
   vpc_id = aws_vpc.openshift-vpc.id
   tags = {
@@ -38,13 +38,14 @@ resource "aws_internet_gateway" "openshift_igw" {
   } 
 }
 
-#4- Create public route table
+#4. Create public route table
 resource "aws_route_table" "openshift_route_table" {
   vpc_id = aws_vpc.openshift-vpc.id
   tags = {
     Name = "openshift-pub-RT"
   } 
 }
+
 # add routes in route table
 resource "aws_route" "my_route" {
   route_table_id         = aws_route_table.openshift_route_table.id
@@ -53,12 +54,13 @@ resource "aws_route" "my_route" {
 }
 
 
-# Associate public subnets with public route table
+#5. Associate public subnets with public route table
 resource "aws_route_table_association" "public_subnet_association" {
   subnet_id      = aws_subnet.openshift-sub.id
   route_table_id = aws_route_table.openshift_route_table.id
 
 }
+
 ################### Security Group ###################
 resource "aws_security_group" "openshift-sg" {
   name        = "openshift-sg"
@@ -87,7 +89,7 @@ resource "aws_security_group" "openshift-sg" {
 }
 
 ################### create Key pair ###################
-# RSA key of size 4096 bits
+#6. RSA key of size 4096 bits
 resource "tls_private_key" "rsa-4096" {
   algorithm = "RSA"
   rsa_bits  = 4096
@@ -101,6 +103,7 @@ resource "local_file" "private_key" {
   content = tls_private_key.rsa-4096.private_key_pem
   filename = "key_pair.pem"
 }
+
 ################### Create resources in public subnet ###################
 resource "aws_instance" "public_instance" {
   ami           = "ami-0b6ef6629d4230b38"  # Replace with your desired AMI ID
