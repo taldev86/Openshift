@@ -1,25 +1,28 @@
+## Getting Started
 
+To begin, follow these steps:
 
+### Integrate with Your Tools
 
-
-## Getting started
-
-
+1. Clone the Git repository.
+2. Update the access_key and secret_key in the "openshift.tf" file.
+3. Execute the following commands:
+```shell
+docker build -t my-terraform-image .
+docker run my-terraform-image
 ```
 
-## Integrate with your tools
-1- pull the git repo
-2- change the access_key and secret_key in "openshift.tf" file
-3- then run below commands
-docker build -t my-terraform-image-5 .
-docker run my-terraform-image-5 
+4. If the Docker container shows as exited, restart it with:
+```shell
+docker container start <container_name>
+```
 
-## if docker container is shows exited then run
-docker container start <container_ name>
-## Now go to aws and check ec2 instnace and ssh to ec2 instnace
+5. Once completed, proceed to AWS to verify EC2 instance creation and SSH into the EC2 instance.
+
+```shell
 ./openshift-install create cluster --dir=cluster
 export KUBECONFIG=cluster/auth/kubeconfig
 export CLUSTER_NAME=my-cluster
 export BASE_DOMAIN=sandbox.acme.com
 ./adjust-single-node.sh
--
+```
